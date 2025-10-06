@@ -11,17 +11,12 @@
         .view.active { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; padding: 15px; }
         .container { background: var(--white-bg); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; box-sizing: border-box; position: relative; }
         .back-btn { position: absolute; top: 15px; left: 15px; text-decoration: none; font-size: 1.5rem; color: var(--secondary-color); }
-
-        /* Landing Page */
-        #landingView .container { text-align: center; }
-        h1 { color: var(--dark-text); }
+        h1 { color: var(--dark-text); text-align: center;}
+        h2 { text-align: center; color: var(--dark-text); }
         .button { display: block; width: 100%; padding: 18px; margin: 15px 0; font-size: 1.2em; color: white; border: none; border-radius: 10px; text-decoration: none; cursor: pointer; box-sizing: border-box; }
         .primary { background-color: var(--primary-color); }
         .secondary { background-color: var(--secondary-color); }
         .tertiary { background-color: var(--success-color); }
-
-        /* Form & Common Styles */
-        h2 { text-align: center; color: var(--dark-text); }
         label { font-weight: bold; color: var(--light-text); }
         input[type=password], input[type=tel] { width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
         .submit-btn { width: 100%; padding: 15px; font-size: 1.2em; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
@@ -34,9 +29,6 @@
         .loader { display: none; text-align: center; }
         .order-id { background-color: #e9ecef; padding: 10px; border-radius: 5px; font-size: 1.2em; font-weight: bold; }
         .whatsapp-btn { display: inline-block; background-color: #25D366; color: white; padding: 15px 25px; margin-top: 20px; border-radius: 5px; text-decoration: none; font-weight: bold; }
-        
-        /* Admin Dashboard */
-        #adminDashboardView .container { max-width: 90%; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 0.9em;}
         th { background-color: #f2f2f2; }
@@ -46,7 +38,7 @@
 <body>
 
     <div id="landingView" class="view active">
-        <div class="container">
+        <div class="container" style="text-align:center;">
             <h1>Selamat Datang</h1>
             <p>Silakan pilih menu di bawah ini:</p>
             <a href="#" onclick="showView('formView')" class="button primary">Beli Tiket Online</a>
@@ -60,8 +52,8 @@
             <a href="#" onclick="showView('landingView')" class="back-btn">&larr;</a>
             <h2>Pesan Tiket Anda</h2>
             <form id="orderForm">
-                <div class="ticket-item"><div><h3>Dewasa</h3><p>Rp 25.000</p></div><div class="controls"><button type="button" class="qty-btn" onclick="updateQty('dewasa', -1)">-</button><input type="number" id="dewasa" name="dewasa" class="qty-input" value="0" min="0" oninput="updateTotal()"><button type="button" class="qty-btn" onclick="updateQty('dewasa', 1)">+</button></div></div>
-                <div class="ticket-item"><div><h3>Anak-anak</h3><p>Rp 15.000</p></div><div class="controls"><button type="button" class="qty-btn" onclick="updateQty('anak', -1)">-</button><input type="number" id="anak" name="anak" class="qty-input" value="0" min="0" oninput="updateTotal()"><button type="button" class="qty-btn" onclick="updateQty('anak', 1)">+</button></div></div>
+                <div class="ticket-item"><div><h3>Dewasa</h3><p>Rp 3.000</p></div><div class="controls"><button type="button" class="qty-btn" onclick="updateQty('dewasa', -1)">-</button><input type="number" id="dewasa" class="qty-input" value="0" min="0" oninput="updateTotal()"><button type="button" class="qty-btn" onclick="updateQty('dewasa', 1)">+</button></div></div>
+                <div class="ticket-item"><div><h3>Anak-anak</h3><p>Rp 2.000</p></div><div class="controls"><button type="button" class="qty-btn" onclick="updateQty('anak', -1)">-</button><input type="number" id="anak" class="qty-input" value="0" min="0" oninput="updateTotal()"><button type="button" class="qty-btn" onclick="updateQty('anak', 1)">+</button></div></div>
                 <div><label for="kontak">Nomor WhatsApp (Opsional)</label><input type="tel" id="kontak" name="kontak"></div>
                 <div id="total" class="total">Total: Rp 0</div>
                 <button type="submit" id="submitBtn" class="submit-btn primary">Lanjutkan Pembayaran</button>
@@ -72,6 +64,7 @@
 
     <div id="tungguView" class="view">
         <div class="container" style="text-align: center;">
+            <a href="#" onclick="showView('formView')" class="back-btn">&larr;</a>
             <h2>Selesaikan Pembayaran Anda</h2>
             <p>Nomor Pesanan Anda adalah:</p>
             <div id="orderIdDisplay" class="order-id"></div>
@@ -80,8 +73,6 @@
             <h3>Penting!</h3>
             <p>Sertakan <b>Nomor Pesanan</b> Anda saat mengirim bukti transfer.</p>
             <a id="waLink" href="#" class="whatsapp-btn" target="_blank">Konfirmasi via WhatsApp</a>
-            <hr style="margin-top: 30px;">
-            <p><i>Halaman ini akan diperbarui secara otomatis setelah pembayaran Anda dikonfirmasi oleh admin.</i></p>
         </div>
     </div>
 
@@ -91,7 +82,7 @@
             <h2>Login Admin</h2>
             <form id="adminLoginForm">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" required>
                 <button type="submit" class="submit-btn secondary">Login</button>
             </form>
         </div>
@@ -105,7 +96,7 @@
             <div id="dashboardLoader" class="loader"><p>Memuat pesanan...</p></div>
             <div style="overflow-x:auto;">
                 <table>
-                    <thead><tr><th>Waktu</th><th>Order ID</th><th>D</th><th>A</th><th>Total</th><th>Aksi</th></tr></thead>
+                    <thead><tr><th>Waktu</th><th>Order ID</th><th>Dws</th><th>Ank</th><th>Total</th><th>Aksi</th></tr></thead>
                     <tbody id="ordersTableBody"></tbody>
                 </table>
             </div>
@@ -121,17 +112,16 @@
     </div>
 
     <script>
-        const HARGA_DEWASA = 25000;
-        const HARGA_ANAK = 15000;
+        // --- LOGIKA UTAMA APLIKASI ---
+        const HARGA_DEWASA = <?!= HARGA_DEWASA ?>;
+        const HARGA_ANAK = <?!= HARGA_ANAK ?>;
         const NO_WHATSAPP_ADMIN = "<?!= NO_WHATSAPP_ADMIN ?>";
 
         function showView(viewId) {
             document.querySelectorAll('.view').forEach(view => view.style.display = 'none');
             document.getElementById(viewId).style.display = 'flex';
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            showView('landingView'); // Tampilkan landing page saat pertama kali dimuat
-        });
+        document.addEventListener('DOMContentLoaded', function() { showView('landingView'); });
 
         // --- Logika Form Pemesanan ---
         function updateQty(item, change) {
@@ -155,6 +145,8 @@
             google.script.run.withSuccessHandler(onOrderSuccess).withFailureHandler(onFailure).processOrder(formData);
         });
         function onOrderSuccess(response) {
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('formLoader').style.display = 'none';
             if (response.status === "sukses") {
                 document.getElementById('orderIdDisplay').innerText = response.orderId;
                 const waMessage = encodeURIComponent("Konfirmasi pembayaran untuk Pesanan " + response.orderId);
@@ -163,8 +155,6 @@
             } else {
                 alert("Error: " + response.message);
             }
-            document.getElementById('submitBtn').style.display = 'block';
-            document.getElementById('formLoader').style.display = 'none';
         }
 
         // --- Logika Admin ---
@@ -175,6 +165,7 @@
         });
         function onLoginSuccess(response){
             if(response.success){
+                document.getElementById('password').value = ''; // Kosongkan password setelah login
                 showView('adminDashboardView');
                 loadOrders();
             } else {
@@ -190,11 +181,12 @@
             tbody.innerHTML = '';
             if (orders.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Tidak ada pesanan yang menunggu.</td></tr>';
+            } else {
+                orders.reverse().forEach(order => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `<td>${order.timestamp}</td><td>${order.orderId}</td><td>${order.dewasa}</td><td>${order.anak}</td><td>${order.total.toLocaleString('id-ID')}</td><td><button class="confirm-btn" data-orderid="${order.orderId}">Konfirmasi</button></td>`;
+                });
             }
-            orders.reverse().forEach(order => {
-                const row = tbody.insertRow();
-                row.innerHTML = `<td>${order.timestamp}</td><td>${order.orderId}</td><td>${order.dewasa}</td><td>${order.anak}</td><td>${order.total.toLocaleString('id-ID')}</td><td><button class="confirm-btn" data-orderid="${order.orderId}">Konfirmasi</button></td>`;
-            });
             document.getElementById('dashboardLoader').style.display = 'none';
         }
         document.getElementById('ordersTableBody').addEventListener('click', function(e){
@@ -216,14 +208,10 @@
         
         // --- Penanganan Error Universal ---
         function onFailure(error) {
-            alert('Terjadi kesalahan saat berkomunikasi dengan server: ' + error.message);
-            // Kembalikan tombol ke keadaan semula jika ada loader
-            const submitBtn = document.getElementById('submitBtn');
-            const formLoader = document.getElementById('formLoader');
-            if(submitBtn && formLoader) {
-                submitBtn.style.display = 'block';
-                formLoader.style.display = 'none';
-            }
+            alert('Terjadi kesalahan: ' + error.message);
+            // Sembunyikan semua loader
+            document.querySelectorAll('.loader').forEach(l => l.style.display = 'none');
+            document.getElementById('submitBtn').style.display = 'block';
         }
     </script>
 </body>
