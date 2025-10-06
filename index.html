@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiket Kolam Renang</title>
+    <style>
+      /* CSS untuk tampilan halaman utama */
+      body { font-family: Arial, sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f8ff; }
+      .container { text-align: center; }
+      h1 { color: #005a9c; }
+      .button { display: block; width: 250px; padding: 20px; margin: 15px 0; font-size: 1.2em; color: white; border: none; border-radius: 10px; text-decoration: none; cursor: pointer; }
+      .primary { background-color: #007bff; }
+      .secondary { background-color: #6c757d; }
+      .tertiary { background-color: #28a745; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Selamat Datang</h1>
+      <p>Silakan pilih menu di bawah ini:</p>
+      <a href="<?= ScriptApp.getService().getUrl() ?>?page=pesan" class="button primary">Beli Tiket Online</a>
+      <a href="#" class="button secondary">Login Admin</a>
+      <a href="#" class="button tertiary">Scan Tiket (Penjaga)</a>
+    </div>
+  </body>
+</html>
