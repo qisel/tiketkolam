@@ -8,7 +8,7 @@
         :root { --primary-color: #007bff; --secondary-color: #6c757d; --success-color: #28a745; --light-bg: #f0f8ff; --white-bg: #ffffff; --dark-text: #333; --light-text: #666; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: var(--light-bg); }
         .view { display: none; }
-        .view.active { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        .view.active { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; padding: 15px; }
         .container { background: var(--white-bg); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; box-sizing: border-box; position: relative; }
         .back-btn { position: absolute; top: 15px; left: 15px; text-decoration: none; font-size: 1.5rem; color: var(--secondary-color); }
 
@@ -129,7 +129,9 @@
             document.querySelectorAll('.view').forEach(view => view.style.display = 'none');
             document.getElementById(viewId).style.display = 'flex';
         }
-        document.getElementById('landingView').style.display = 'flex'; // Tampilkan landing page saat pertama kali dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            showView('landingView'); // Tampilkan landing page saat pertama kali dimuat
+        });
 
         // --- Logika Form Pemesanan ---
         function updateQty(item, change) {
@@ -150,7 +152,7 @@
             document.getElementById('submitBtn').style.display = 'none';
             document.getElementById('formLoader').style.display = 'block';
             const formData = { dewasa: document.getElementById('dewasa').value, anak: document.getElementById('anak').value, kontak: document.getElementById('kontak').value };
-            google.script.run.withSuccessHandler(onOrderSuccess).processOrder(formData);
+            google.script.run.withSuccessHandler(onOrderSuccess).withFailureHandler(onFailure).processOrder(formData);
         });
         function onOrderSuccess(response) {
             if (response.status === "sukses") {
@@ -169,7 +171,7 @@
         document.getElementById('adminLoginForm').addEventListener('submit', function(e){
             e.preventDefault();
             const password = document.getElementById('password').value;
-            google.script.run.withSuccessHandler(onLoginSuccess).checkAdminLogin(password);
+            google.script.run.withSuccessHandler(onLoginSuccess).withFailureHandler(onFailure).checkAdminLogin(password);
         });
         function onLoginSuccess(response){
             if(response.success){
@@ -181,7 +183,7 @@
         }
         function loadOrders() {
             document.getElementById('dashboardLoader').style.display = 'block';
-            google.script.run.withSuccessHandler(displayOrders).getPendingOrders();
+            google.script.run.withSuccessHandler(displayOrders).withFailureHandler(onFailure).getPendingOrders();
         }
         function displayOrders(orders) {
             const tbody = document.getElementById('ordersTableBody');
@@ -201,7 +203,7 @@
                 if(confirm('Konfirmasi pembayaran untuk pesanan ' + orderId + '?')){
                     e.target.disabled = true;
                     e.target.innerText = "OK...";
-                    google.script.run.withSuccessHandler(onConfirmSuccess).confirmPayment(orderId);
+                    google.script.run.withSuccessHandler(onConfirmSuccess).withFailureHandler(onFailure).confirmPayment(orderId);
                 }
             }
         });
@@ -209,6 +211,18 @@
             alert(response.message);
             if(response.success){
                 loadOrders();
+            }
+        }
+        
+        // --- Penanganan Error Universal ---
+        function onFailure(error) {
+            alert('Terjadi kesalahan saat berkomunikasi dengan server: ' + error.message);
+            // Kembalikan tombol ke keadaan semula jika ada loader
+            const submitBtn = document.getElementById('submitBtn');
+            const formLoader = document.getElementById('formLoader');
+            if(submitBtn && formLoader) {
+                submitBtn.style.display = 'block';
+                formLoader.style.display = 'none';
             }
         }
     </script>
