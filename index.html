@@ -1,27 +1,142 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiket Kolam Renang</title>
-    <style>
-      /* CSS untuk tampilan halaman utama */
-      body { font-family: Arial, sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f8ff; }
-      .container { text-align: center; }
-      h1 { color: #005a9c; }
-      .button { display: block; width: 250px; padding: 20px; margin: 15px 0; font-size: 1.2em; color: white; border: none; border-radius: 10px; text-decoration: none; cursor: pointer; }
-      .primary { background-color: #007bff; }
-      .secondary { background-color: #6c757d; }
-      .tertiary { background-color: #28a745; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
+<head>
+  <base target="_top">
+  <title>Tiket Kolam Renang</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: #f0f8ff; }
+    .view { display: none; } /* Semua view disembunyikan secara default */
+    .view.active { display: flex; } /* View yang aktif akan ditampilkan */
+    
+    /* Styling untuk Landing Page */
+    #landingView { flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
+    .landing-container { text-align: center; }
+    h1 { color: #005a9c; }
+    .button { display: block; width: 250px; padding: 20px; margin: 15px 0; font-size: 1.2em; color: white; border: none; border-radius: 10px; text-decoration: none; cursor: pointer; }
+    .primary { background-color: #007bff; }
+    .secondary { background-color: #6c757d; }
+    .tertiary { background-color: #28a745; }
+
+    /* Styling untuk Form & Halaman Tunggu */
+    .content-view { padding: 20px; justify-content: center; align-items: flex-start; min-height: 100vh; box-sizing: border-box;}
+    .form-container, .tunggu-container { width: 100%; max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .ticket-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .controls { display: flex; align-items: center; }
+    .qty-btn { width: 40px; height: 40px; font-size: 1.5em; border: 1px solid #ccc; background: #f7f7f7; cursor: pointer; }
+    .qty-input { width: 50px; height: 40px; text-align: center; font-size: 1.2em; border: 1px solid #ccc; margin: 0 5px; }
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .total { text-align: right; font-size: 1.5em; font-weight: bold; margin-top: 20px; }
+    .submit-btn { width: 100%; padding: 15px; font-size: 1.2em; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+    .loader { display: none; text-align: center; }
+    .order-id { background-color: #e9ecef; padding: 10px; border-radius: 5px; font-size: 1.2em; font-weight: bold; }
+    .whatsapp-btn { display: inline-block; background-color: #25D366; color: white; padding: 15px 25px; margin-top: 20px; border-radius: 5px; text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div id="landingView" class="view active">
+    <div class="landing-container">
       <h1>Selamat Datang</h1>
       <p>Silakan pilih menu di bawah ini:</p>
-      <a href="<?= ScriptApp.getService().getUrl() ?>?page=pesan" class="button primary">Beli Tiket Online</a>
+      <a href="#" onclick="showView('formView')" class="button primary">Beli Tiket Online</a>
       <a href="#" class="button secondary">Login Admin</a>
       <a href="#" class="button tertiary">Scan Tiket (Penjaga)</a>
     </div>
-  </body>
+  </div>
+
+  <div id="formView" class="view content-view">
+    <div class="form-container">
+      <h2>Pesan Tiket Anda</h2>
+      <form id="orderForm">
+        <div class="ticket-item"><div><h3>Dewasa</h3><p>Rp 25.000</p></div><div class="controls"><button type="button" class="qty-btn" onclick="updateQty('dewasa', -1)">-</button><input type="number" id="dewasa" name="dewasa" class="qty-input" value="0" min="0" onchange="updateTotal()"><button type="button" class="qty-btn" onclick="updateQty('dewasa', 1)">+</button></div></div>
+        <div class="ticket-item"><div><h3>Anak-anak</h3><p>Rp 15.000</p></div><div class="controls"><button type="button" class="qty-btn" onclick="updateQty('anak', -1)">-</button><input type="number" id="anak" name="anak" class="qty-input" value="0" min="0" onchange="updateTotal()"><button type="button" class="qty-btn" onclick="updateQty('anak', 1)">+</button></div></div>
+        <div><label for="kontak">Nomor WhatsApp (Opsional)</label><input type="tel" id="kontak" name="kontak" style="width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box;"></div>
+        <div id="total" class="total">Total: Rp 0</div>
+        <button type="submit" id="submitBtn" class="submit-btn">Lanjutkan Pembayaran</button>
+        <div id="loader" class="loader"><p>Memproses pesanan...</p></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="tungguView" class="view content-view">
+    <div class="tunggu-container" style="text-align: center;">
+      <h2>Selesaikan Pembayaran Anda</h2>
+      <p>Nomor Pesanan Anda adalah:</p>
+      <div id="orderIdDisplay" class="order-id"></div>
+      <p style="margin-top: 20px;">Silakan lakukan pembayaran melalui QRIS atau transfer, lalu kirim bukti transfer via WhatsApp.</p>
+      <img src="https://www.danacita.co.id/blog/wp-content/uploads/2022/10/standar-nasional-pembayaran-qris-adalah_01.jpg" alt="QRIS Pembayaran" style="max-width: 250px; margin-top: 10px;">
+      <h3>Penting!</h3>
+      <p>Sertakan <b>Nomor Pesanan</b> Anda saat mengirim bukti transfer agar pesanan Anda dapat segera diproses.</p>
+      <a id="waLink" href="#" class="whatsapp-btn" target="_blank">Konfirmasi via WhatsApp</a>
+      <hr style="margin-top: 30px;">
+      <p><i>Halaman ini akan diperbarui secara otomatis setelah pembayaran Anda dikonfirmasi oleh admin.</i></p>
+    </div>
+  </div>
+
+  <script>
+    const HARGA_DEWASA = 25000;
+    const HARGA_ANAK = 15000;
+    const NO_WHATSAPP_ADMIN = "<?!= NO_WHATSAPP_ADMIN ?>";
+    
+    // Fungsi untuk berpindah antar tampilan
+    function showView(viewId) {
+      document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+      });
+      document.getElementById(viewId).classList.add('active');
+    }
+
+    // --- LOGIKA FORM PEMESANAN ---
+    function updateQty(item, change) {
+      const input = document.getElementById(item);
+      let currentValue = parseInt(input.value) || 0;
+      let newValue = currentValue + change;
+      if (newValue < 0) newValue = 0;
+      input.value = newValue;
+      updateTotal();
+    }
+
+    function updateTotal() {
+      const dewasa = parseInt(document.getElementById('dewasa').value) || 0;
+      const anak = parseInt(document.getElementById('anak').value) || 0;
+      const total = (dewasa * HARGA_DEWASA) + (anak * HARGA_ANAK);
+      document.getElementById('total').innerText = 'Total: Rp ' + total.toLocaleString('id-ID');
+    }
+
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('submitBtn').style.display = 'none';
+      document.getElementById('loader').style.display = 'block';
+
+      const formData = {
+        dewasa: document.getElementById('dewasa').value,
+        anak: document.getElementById('anak').value,
+        kontak: document.getElementById('kontak').value
+      };
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.status === "sukses") {
+            // Isi data di halaman tunggu
+            document.getElementById('orderIdDisplay').innerText = response.orderId;
+            const waMessage = encodeURIComponent("Halo, saya ingin konfirmasi pembayaran untuk Nomor Pesanan " + response.orderId + ". Berikut bukti transfernya.");
+            document.getElementById('waLink').href = "https://wa.me/" + NO_WHATSAPP_ADMIN + "?text=" + waMessage;
+            
+            // Pindah ke halaman tunggu
+            showView('tungguView');
+          } else {
+            alert("Error: " + response.message);
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert("Terjadi kesalahan: " + error.message);
+          document.getElementById('submitBtn').style.display = 'block';
+          document.getElementById('loader').style.display = 'none';
+        })
+        .processOrder(formData);
+    });
+  </script>
+</body>
 </html>
